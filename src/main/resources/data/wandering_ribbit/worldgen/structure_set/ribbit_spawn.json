@@ -1,0 +1,15 @@
+{
+  "structures": [
+    {
+      "structure": "wandering_ribbit:ribbit_spawn",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 18,
+    "separation": 12,
+    "spread_type": "linear",
+    "salt": 548725874
+  }
+}

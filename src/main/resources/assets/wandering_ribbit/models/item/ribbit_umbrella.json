@@ -1,0 +1,7 @@
+{
+  "parent": "wandering_ribbit:custom/umbrella_leaf",
+  "textures": {
+    "0": "wandering_ribbit:item/umbrella_leaf_texture",
+    "particle": "wandering_ribbit:item/umbrella_leaf_item"
+  }
+}
