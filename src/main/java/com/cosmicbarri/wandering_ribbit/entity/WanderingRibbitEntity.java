@@ -4,8 +4,11 @@ import com.cosmicbarri.wandering_ribbit.registry.EntityRegistry;
 import com.cosmicbarri.wandering_ribbit.registry.ItemRegistry;
 import com.cosmicbarri.wandering_ribbit.registry.SoundRegistry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -20,8 +23,7 @@ import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
@@ -71,6 +73,23 @@ public class WanderingRibbitEntity extends PathfinderMob implements GeoEntity, M
     }
 
     @Override
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        MerchantOffers merchantoffers = this.getOffers();
+        if (!merchantoffers.isEmpty()) {
+            tag.put("Offers", merchantoffers.createTag());
+        }
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        if (tag.contains("Offers", CompoundTag.TAG_COMPOUND)) {
+            this.offers = new MerchantOffers(tag.getCompound("Offers"));
+        }
+    }
+
+    @Override
     public boolean hurt(DamageSource source, float amount) {
         if (source.is(DamageTypes.FALL))
             return false;
@@ -80,9 +99,9 @@ public class WanderingRibbitEntity extends PathfinderMob implements GeoEntity, M
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(1, new RandomStrollGoal(this, 1));
-        this.goalSelector.addGoal(2, new RandomLookAroundGoal(this));
-        this.goalSelector.addGoal(3, new FloatGoal(this));
+        this.goalSelector.addGoal(1, new FloatGoal(this));
+        this.goalSelector.addGoal(2, new RandomStrollGoal(this, 1));
+        this.goalSelector.addGoal(3, new RandomLookAroundGoal(this));
     }
 
     @Override
@@ -153,12 +172,27 @@ public class WanderingRibbitEntity extends PathfinderMob implements GeoEntity, M
         return this.tradingPlayer;
     }
 
+    private MerchantOffer getRandomOffer() {
+        Item item = ItemCache.getRandomItem(this.random);
+        return new MerchantOffer(new ItemStack(Items.AMETHYST_SHARD, 3), new ItemStack(item, item.getDefaultInstance().getMaxStackSize() != 1 ? 8 : 1), 5, 5, 1);
+    }
+
+    private void updateOffers() {
+        this.offers = null;
+        this.getOffers();
+    }
+
     @Override
     public MerchantOffers getOffers() {
         if (this.offers == null) {
             this.offers = new MerchantOffers();
             this.offers.add(new MerchantOffer(new ItemStack(Items.AMETHYST_SHARD, 5), Items.COMPASS.getDefaultInstance(), ItemRegistry.RIBBIT_MAP.get().getDefaultInstance(), 5, 5, 1));
             this.offers.add(new MerchantOffer(new ItemStack(Items.AMETHYST_SHARD, 3), ItemRegistry.RIBBIT_UMBRELLA.get().getDefaultInstance(), 5, 5, 1));
+            if (ItemCache.getRandomItem(this.random) != ItemStack.EMPTY.getItem()) {
+                this.offers.add(getRandomOffer());
+                this.offers.add(getRandomOffer());
+                this.offers.add(getRandomOffer());
+            }
         }
         return this.offers;
     }
@@ -169,13 +203,12 @@ public class WanderingRibbitEntity extends PathfinderMob implements GeoEntity, M
     @Override
     public void notifyTrade(MerchantOffer merchantOffer) {
         merchantOffer.increaseUses();
-    }
-
-    @Override
-    public void notifyTradeUpdated(ItemStack itemStack) {
         this.triggerAnim("controller", "dance");
         this.push(0, 0.1, 0);
     }
+
+    @Override
+    public void notifyTradeUpdated(ItemStack itemStack) {}
 
     @Override
     public int getVillagerXp() {
@@ -186,13 +219,25 @@ public class WanderingRibbitEntity extends PathfinderMob implements GeoEntity, M
     public void overrideXp(int i) {}
 
     @Override
-    public InteractionResult mobInteract(Player player, InteractionHand interactionHand) {
-        if (!this.level().isClientSide) {
-            this.openTradingScreen(player, this.getDisplayName(), 0);
-            this.setTradingPlayer(player);
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        if (this.getOffers().isEmpty()) return InteractionResult.FAIL;
+        if (player.getMainHandItem().is(Items.AMETHYST_SHARD) && player.isCrouching()) {
+            if (this.level() instanceof ServerLevel sl) {
+                player.getMainHandItem().shrink(1);
+                this.updateOffers();
+                sl.sendParticles(ParticleTypes.HAPPY_VILLAGER, this.getX(), this.getY(), this.getZ(), 15, 0.5, 0.5, 0.5, 0.0);
+                this.playSound(SoundRegistry.WANDERING_RIBBIT_AMBIENT.get(), 1.0F, 1.0F);
+            }
             return InteractionResult.sidedSuccess(this.level().isClientSide);
         }
-        return super.mobInteract(player, interactionHand);
+        if (this.getTradingPlayer() == null) {
+            if (!this.level().isClientSide) {
+                this.setTradingPlayer(player);
+                this.openTradingScreen(player, this.getDisplayName(), 0);
+            }
+            return InteractionResult.sidedSuccess(this.level().isClientSide);
+        }
+        return super.mobInteract(player, hand);
     }
 
     @Override

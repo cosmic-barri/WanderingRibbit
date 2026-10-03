@@ -18,11 +18,9 @@ public class EntityRegistry {
     public static final RegistryObject<EntityType<WanderingRibbitEntity>> WANDERING_RIBBIT = register(
             EntityType.Builder.<WanderingRibbitEntity>of(WanderingRibbitEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(WanderingRibbitEntity::new)
                    .sized(0.8f, 0.8f));
-
     private static <T extends Entity> RegistryObject<EntityType<T>> register(EntityType.Builder<T> entityTypeBuilder) {
         return REGISTRY.register("wandering_ribbit", () -> entityTypeBuilder.build("wandering_ribbit"));
     }
-
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(WANDERING_RIBBIT.get(), WanderingRibbitEntity.createAttributes().build());

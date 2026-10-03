@@ -1,0 +1,19 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": [
+    "birch_forest",
+    "dark_forest",
+    "forest",
+    "snowy_taiga",
+    "snowy_plains",
+    "savanna_plateau",
+    "savanna",
+    "plains"
+  ],
+  "spawners": {
+    "type": "wandering_ribbit:wandering_ribbit",
+    "weight": 1,
+    "minCount": 1,
+    "maxCount": 1
+  }
+}

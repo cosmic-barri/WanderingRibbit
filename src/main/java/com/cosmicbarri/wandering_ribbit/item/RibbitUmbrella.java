@@ -12,7 +12,6 @@ public class RibbitUmbrella extends Item {
     public RibbitUmbrella() {
         super(new Item.Properties().stacksTo(1));
     }
-
     @Override
     public void inventoryTick(ItemStack itemstack, Level level, Entity entity, int slot, boolean selected) {
         super.inventoryTick(itemstack, level, entity, slot, selected);

@@ -23,16 +23,15 @@ public class RibbitMap extends Item {
     public RibbitMap() {
         super(new Item.Properties());
     }
-
     public void createMap(Player player) {
         if (!ModList.get().isLoaded("ribbits")) {
             player.displayClientMessage(Component.translatable("item.wandering_ribbit.ribbit_map_error_void"), true);
             return;
         }
-        if (ModList.get().isLoaded("ribbits") && player.level() instanceof ServerLevel level) {
+        if (player.level() instanceof ServerLevel level) {
             ResourceKey<Structure> structureKey = ResourceKey.create(
                     net.minecraft.core.registries.Registries.STRUCTURE,
-                    new ResourceLocation("ribbits", "ribbit_village")
+                    ResourceLocation.fromNamespaceAndPath("ribbits", "ribbit_village")
             );
             Registry<Structure> structureRegistry = player.level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.STRUCTURE);
             Holder<Structure> holder = structureRegistry.getHolderOrThrow(structureKey);
@@ -51,7 +50,6 @@ public class RibbitMap extends Item {
             }
         }
     }
-
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         createMap(player);

@@ -12,11 +12,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 @Mod(WanderingRibbit.MODID)
 public class WanderingRibbit {
     public static final String MODID = "wandering_ribbit";
-
     public WanderingRibbit() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         MinecraftForge.EVENT_BUS.register(this);
-
         SoundRegistry.REGISTRY.register(bus);
         ItemRegistry.REGISTRY.register(bus);
         EntityRegistry.REGISTRY.register(bus);

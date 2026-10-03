@@ -14,17 +14,14 @@ public class WanderingRibbitRenderer extends GeoEntityRenderer<WanderingRibbitEn
         super(renderManager, new WanderingRibbitModel());
         this.shadowRadius = 0.4f;
     }
-
     @Override
     public RenderType getRenderType(WanderingRibbitEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
         return RenderType.entityTranslucent(getTextureLocation(animatable));
     }
-
     @Override
     public void preRender(PoseStack poseStack, WanderingRibbitEntity entity, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        float scale = 1f;
-        this.scaleHeight = scale;
-        this.scaleWidth = scale;
+        this.scaleHeight = 1f;
+        this.scaleWidth = 1f;
         super.preRender(poseStack, entity, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
     }
 }
