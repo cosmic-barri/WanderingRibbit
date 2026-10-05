@@ -3,6 +3,7 @@ package com.cosmicbarri.wandering_ribbit.item;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -17,23 +18,18 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.saveddata.maps.MapDecoration;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
-import net.minecraftforge.fml.ModList;
 
 public class RibbitMap extends Item {
     public RibbitMap() {
         super(new Item.Properties());
     }
     public void createMap(Player player) {
-        if (!ModList.get().isLoaded("ribbits")) {
-            player.displayClientMessage(Component.translatable("item.wandering_ribbit.ribbit_map_error_void"), true);
-            return;
-        }
         if (player.level() instanceof ServerLevel level) {
             ResourceKey<Structure> structureKey = ResourceKey.create(
-                    net.minecraft.core.registries.Registries.STRUCTURE,
+                    Registries.STRUCTURE,
                     ResourceLocation.fromNamespaceAndPath("ribbits", "ribbit_village")
             );
-            Registry<Structure> structureRegistry = player.level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.STRUCTURE);
+            Registry<Structure> structureRegistry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
             Holder<Structure> holder = structureRegistry.getHolderOrThrow(structureKey);
             HolderSet<Structure> holderSet = HolderSet.direct(holder);
             var result = level.getChunkSource().getGenerator().findNearestMapStructure(

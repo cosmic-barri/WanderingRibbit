@@ -4,6 +4,5 @@
   "item.wandering_ribbit.ribbit_map": "Ribbit Map",
   "item.wandering_ribbit.ribbit_map_item": "Ribbit Village Map",
   "item.wandering_ribbit.ribbit_umbrella": "Ribbit Umbrella",
-  "item.wandering_ribbit.ribbit_map_error": "Cannot find a near ribbit village",
-  "item.wandering_ribbit.ribbit_map_error_void": "Unexpected error. Check if you have installed the original ribbit mod."
+  "item.wandering_ribbit.ribbit_map_error": "Cannot find a near ribbit village"
 }
