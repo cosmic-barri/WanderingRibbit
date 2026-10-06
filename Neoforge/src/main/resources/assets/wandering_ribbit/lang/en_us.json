@@ -1,0 +1,8 @@
+{
+  "entity.wandering_ribbit.wandering_ribbit": "Wandering Ribbit",
+  "item.wandering_ribbit.ribbit_egg": "Wandering Ribbit Spawn Egg",
+  "item.wandering_ribbit.ribbit_map": "Ribbit Map",
+  "item.wandering_ribbit.ribbit_map_item": "Ribbit Village Map",
+  "item.wandering_ribbit.ribbit_umbrella": "Ribbit Umbrella",
+  "item.wandering_ribbit.ribbit_map_error": "Cannot find a near ribbit village"
+}

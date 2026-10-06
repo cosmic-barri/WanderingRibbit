@@ -1,0 +1,30 @@
+{
+  "wandering_ribbit_ambient": {
+    "category": "neutral",
+    "subtitle": "subtitles.wandering_ribbit.ambient",
+    "sounds": [
+      "wandering_ribbit:wandering_ribbit_ambient"
+    ]
+  },
+  "wandering_ribbit_hurt":{
+    "category": "neutral",
+    "subtitle": "subtitles.wandering_ribbit.hurt",
+    "sounds": [
+      "wandering_ribbit:wandering_ribbit_hurt"
+    ]
+  },
+  "wandering_ribbit_step":{
+    "category": "neutral",
+    "subtitle": "subtitles.wandering_ribbit.step",
+    "sounds": [
+      "wandering_ribbit:wandering_ribbit_step"
+    ]
+  },
+  "wandering_ribbit_death":{
+    "category": "neutral",
+    "subtitle": "subtitles.wandering_ribbit.death",
+    "sounds": [
+      "wandering_ribbit:wandering_ribbit_death"
+    ]
+  }
+}
