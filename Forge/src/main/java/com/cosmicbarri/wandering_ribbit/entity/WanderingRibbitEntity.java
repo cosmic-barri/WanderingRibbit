@@ -19,9 +19,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.trading.Merchant;
@@ -100,8 +98,44 @@ public class WanderingRibbitEntity extends PathfinderMob implements GeoEntity, M
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(1, new FloatGoal(this));
-        this.goalSelector.addGoal(2, new RandomStrollGoal(this, 1));
-        this.goalSelector.addGoal(3, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(2, new LookAtPlayerGoal(this, Player.class, 8f) {
+            @Override
+            public boolean canUse() {
+                if (WanderingRibbitEntity.this.isTrading()) {
+                    this.lookAt = WanderingRibbitEntity.this.getTradingPlayer();
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+        this.goalSelector.addGoal(3, new RandomStrollGoal(this, 1) {
+            @Override
+            public boolean canUse() {
+                if (WanderingRibbitEntity.this.isTrading()) {
+                    this.mob.getNavigation().stop();
+                    return false;
+                }
+                return super.canUse();
+            }
+            @Override
+            public boolean canContinueToUse() {
+                if (WanderingRibbitEntity.this.isTrading()) {
+                    this.mob.getNavigation().stop();
+                    return false;
+                }
+                return super.canContinueToUse();
+            }
+        });
+        this.goalSelector.addGoal(4, new RandomLookAroundGoal(this) {
+            @Override
+            public boolean canUse() {
+                if (WanderingRibbitEntity.this.isTrading()) {
+                    return false;
+                }
+                return super.canUse();
+            }
+        });
     }
 
     @Override
@@ -163,13 +197,15 @@ public class WanderingRibbitEntity extends PathfinderMob implements GeoEntity, M
     @Override
     public void setTradingPlayer(@Nullable Player player) {
         this.tradingPlayer = player;
-        if (this.getTradingPlayer() != null && player == null)
-            this.setTradingPlayer(null);
     }
 
     @Override
     public @Nullable Player getTradingPlayer() {
         return this.tradingPlayer;
+    }
+
+    public boolean isTrading() {
+        return this.tradingPlayer != null;
     }
 
     private MerchantOffer getRandomOffer() {
@@ -220,7 +256,7 @@ public class WanderingRibbitEntity extends PathfinderMob implements GeoEntity, M
 
     @Override
     public @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand hand) {
-        if (this.getTradingPlayer() != null) return InteractionResult.FAIL;
+        if (this.isTrading()) return InteractionResult.FAIL;
         if (player.getMainHandItem().is(Items.AMETHYST_SHARD) && player.isCrouching()) {
             if (this.level() instanceof ServerLevel sl) {
                 player.getMainHandItem().shrink(1);
